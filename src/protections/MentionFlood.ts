@@ -1,11 +1,15 @@
 import { LogLevel, LogService } from "matrix-bot-sdk";
 import { Mjolnir } from "../Mjolnir";
+import { isTrueJoinEvent } from "../utils";
 import { Protection } from "./IProtection";
 import { NumberProtectionSetting } from "./ProtectionSettings";
 
 export const DEFAULT_MAX_MENTIONS = 10;
 
 export class MentionFlood extends Protection {
+
+    private justJoined: { [roomId: string]: { [username: string]: Date} } = {};
+
     settings = {
         maxMentions: new NumberProtectionSetting(DEFAULT_MAX_MENTIONS),
     };
@@ -24,8 +28,39 @@ export class MentionFlood extends Protection {
 
     public async handleEvent(mjolnir: Mjolnir, roomId: string, event: any): Promise<any> {
         const content = event['content'] || { };
+        const minsBeforeTrusting = mjolnir.config.protections.mentionflood.minutesBeforeTrusting;
+
+        if (minsBeforeTrusting > 0) {
+            if (!this.justJoined[roomId]) this.justJoined[roomId] = {};
+
+            if (event['type'] == 'm.room.member') {
+                if (isTrueJoinEvent(event)) {
+                    const now = new Date();
+                    this.justJoined[roomId][event['state_key']] = now;
+                } else if (content['membership'] === 'leave' || content['membership'] === 'ban') {
+                    delete this.justJoined[roomId][event['sender']];
+                }
+
+            return;
+            }
+        }
 
         if (event['type'] !== 'm.room.message') return;
+
+        if (minsBeforeTrusting > 0) {
+            const joinTime = this.justJoined[roomId][event['sender']];
+
+            if (joinTime) {
+                const now = new Date();
+                
+                if (now.valueOf() - joinTime.valueOf() > minsBeforeTrusting * 60 * 1000) {
+                    delete this.justJoined[roomId][event['sender']];
+                    return;
+                }
+            } else {
+                return;
+            }
+        }
 
         const message: string = content['formatted_body'] || content['body'] || null;
 

@@ -203,6 +203,9 @@ protections:
     # (users will always be banned if they say a bad word)
     minutesBeforeTrusting: 20
 
+  mentionflood:
+    minutesBeforeTrusting: 60
+
 # The room state backing store writes a copy of the room state for all protected
 # rooms to the data directory.
 # It is recommended to enable this option unless you deploy Draupnir close to the

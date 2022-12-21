@@ -97,7 +97,9 @@ export interface IConfig {
       words: string[];
       minutesBeforeTrusting: number;
     };
-    mentionflood: {};
+    mentionflood: {
+      minutesBeforeTrusting: number;
+    };
   };
   health: {
     healthz: {
@@ -187,7 +189,9 @@ const defaultConfig: IConfig = {
       words: [],
       minutesBeforeTrusting: 20,
     },
-    mentionflood: {},
+    mentionflood: {
+      minutesBeforeTrusting: 60,
+    },
   },
   health: {
     healthz: {

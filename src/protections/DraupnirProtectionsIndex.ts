@@ -10,6 +10,7 @@ import "./BasicFlooding";
 import "./FirstMessageIsImage";
 import "./JoinWaveShortCircuit";
 import "./RedactionSynchronisation";
+import "./MentionFlood";
 import "./MessageIsMedia";
 import "./MessageIsVoice";
 import "./PolicyChangeNotification";

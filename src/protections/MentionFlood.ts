@@ -1,3 +1,7 @@
+/*
+ * TODO: Add license, upstream Apache2
+ */
+
 import { LogLevel, LogService } from "matrix-bot-sdk";
 import { Mjolnir } from "../Mjolnir";
 import { isTrueJoinEvent } from "../utils";
